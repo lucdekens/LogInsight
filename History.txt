@@ -3,4 +3,7 @@ Author: Luc Dekens
 
 v0.8 - 29 Apr 2016
 - first public release
+v1.0 - 30 Apr 2016
+- added Help
+- introduced time-based constraints
  

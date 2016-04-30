@@ -1,0 +1,14 @@
+TOPIC
+	LogInsight
+
+SYNOPSIS
+	The LogInsight module offers functionality to launch queries against
+  a VMware vRealize Log Insight server.
+
+DESCRIPTION
+	VMware vRealize Log Insight is an appliance that allows administrators to
+  view, manage and analyze syslog data.
+  This module use the Query API that was introduced in Log Insight v3.3.
+
+  SEE ALSO
+	https://www.vmware.com/products/vrealize-log-insight
