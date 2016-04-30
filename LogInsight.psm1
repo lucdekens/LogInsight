@@ -1,4 +1,21 @@
-﻿function ConvertFrom-hLogInsightJsonDateTime
+﻿function ConvertTo-hLogInsightJsonDateTime
+{
+  [CmdletBinding()]
+  param (
+    [DateTime]$Date
+  )
+	
+  Process
+  {
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name)"
+    Write-Verbose -Message "`t$($PSCmdlet.ParameterSetName)"
+    Write-Verbose -Message "`tCalled from $($stack = Get-PSCallStack; $stack[1].Command) at $($stack[1].Location)"
+
+    [int64]($Date.ToUniversalTime() - (Get-Date '1/1/1970')).totalmilliseconds
+  }
+}
+
+function ConvertFrom-hLogInsightJsonDateTime
 {
   [CmdletBinding()]
   param (
@@ -103,6 +120,7 @@ function Invoke-hLogInsightRest
   }
 }
 
+# .ExternalHelp LogInsight-Help.xml
 function Connect-LogInsight
 {
   [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = 'Low')]
@@ -201,6 +219,7 @@ function Connect-LogInsight
   }
 }
 
+# .ExternalHelp LogInsight-Help.xml
 function Get-LogInsightEvent
 {
   [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = 'Low')]
@@ -278,6 +297,7 @@ function Get-LogInsightEvent
   }
 }
 
+# .ExternalHelp LogInsight-Help.xml
 function Get-LogInsightConstraint
 {
   [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = 'Low')]
@@ -285,11 +305,15 @@ function Get-LogInsightConstraint
     [String]$Field,
     [ValidateSet('CONTAINS','NOTCONTAINS','MATCHES_REGEX','NOT_MATCHES_REGEX','STARTS_WITH','NOT_STARTS_WITH','EQ','NE','LE','LT','GE','GT')]
     [String]$Operator,
-    [String]$Value
+    [PSObject]$Value
   )
 
   Process
   {
+    if($Value -is [DateTime])
+    {
+       $Value = ConvertTo-hLogInsightJsonDateTime -Date $Value 
+    }
     $convertTab = @{
         'CONTAINS' = '$($Field)/$($Value)'
         'NOTCONTAINS' = '$($Field)/!$($Value)'
