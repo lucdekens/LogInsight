@@ -51,7 +51,7 @@ function Convert-hLogInsightTimeField
         {
           Convert-hLogInsightTimeField -Object $obj.$($_.Name)
         }
-        elseif($_.Name -match 'Time' -and $_.TypeNameOfValue -eq 'System.Int64')
+        elseif($_.Name -match 'Time|lastSeen|statsAsOf' -and $_.TypeNameOfValue -eq 'System.Int64')
         {
           $obj.$($_.Name) = (ConvertFrom-hLogInsightJsonDateTime -DateTime $obj.$($_.Name))
         }
@@ -330,5 +330,37 @@ function Get-LogInsightConstraint
     }
 
     return  $ExecutionContext.InvokeCommand.ExpandString($convertTab[$Operator])
+  }
+}
+
+function Get-LogInsightAgent
+{
+  [CmdletBinding(SupportsShouldProcess = $True, ConfirmImpact = 'Low')]
+  param (
+    [Switch]$Raw
+  )
+
+  Process
+  {
+    Write-Verbose -Message "$($MyInvocation.MyCommand.Name)"
+    Write-Verbose -Message "`t$($PSCmdlet.ParameterSetName)"
+    Write-Verbose -Message "`tCalled from $($stack = Get-PSCallStack; $stack[1].Command) at $($stack[1].Location)"
+
+    $sAgent = @{
+      Method  = 'Get'
+      Request = 'agent'
+    }
+
+    If ($PSCmdlet.ShouldProcess('Connecting to Log Insight'))
+    {
+      $agents = Invoke-hLogInsightRest @sAgent
+
+      if (!$Raw)
+      {
+          Convert-hLogInsightTimeField -Object $agents
+      }
+
+      $agents.agents
+    }
   }
 }
